@@ -1,0 +1,6 @@
+; School domain name (the part before .managebac.com)
+ManageBac_schoolDomains = "schoolname"
+; Login email address (student)
+ManageBac_login = "example@gmail.com"
+; Login password
+ManageBac_password = "123abc"

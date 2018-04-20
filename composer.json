@@ -1,0 +1,21 @@
+{
+  "name": "yutotakano/kokusaiibline",
+  "description": "",
+  "version": "0.1",
+  "authors": [
+    {
+      "name": "Yuto Takano",
+      "email": "moa17stock@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "6.3.0",
+    "sunra/php-simple-html-dom-parser": "1.5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "KokusaiIBLine\\": "src/"
+    }
+  }
+}
