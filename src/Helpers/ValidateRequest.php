@@ -26,6 +26,7 @@ class ValidateRequest
    * @return Boolean
    */
   public static function validate($post_data) {
+
     $channel_secret = '410d22bf914c3a63f220f566213452f8';
     $hash = hash_hmac('sha256', $post_data, $channel_secret, true); // TODO: Set to true before production
     $signature = base64_encode($hash);
@@ -34,6 +35,7 @@ class ValidateRequest
     } else {
       return true;
     }
+    
   }
 
 }
