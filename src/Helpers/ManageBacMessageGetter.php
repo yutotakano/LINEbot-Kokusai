@@ -22,7 +22,7 @@ use Sunra\PhpSimple\HtmlDomParser;
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
  */
-class MessageGetter
+class ManageBacMessageGetter
 {
 
   /**
@@ -43,6 +43,12 @@ class MessageGetter
    * @var GuzzleHttp\Client
    */
   private $client;
+
+  /**
+   * Will contain the messages as the recursive function gets them page by page.
+   * @var Array
+   */
+  private $messages = [];
 
   /**
    * Constructor function to create a Guzzle client to use later.
@@ -135,18 +141,45 @@ class MessageGetter
    */
   public function get() {
 
+    $this->getMessagesRecursive();
+
+    return $this->messages;
+
+  }
+
+  private function getMessagesRecursive($page = 1) {
+
     $response = $this->client->request(
       'GET',
-      '/student/ib/messages',
+      '/student/ib/messages/page/' . (string)$page,
       [
         'cookies' => $this->session
       ]
     );
 
     $html = HtmlDomParser::str_get_html($response->getBody());
-    
+
     $messages = $html->find('main > .content-wrapper > .content-block > .message');
-    $messages_arr = [];
+
+    $this->messages = array_merge($this->messages, $this->parseMessages($messages));
+
+    $next_button = $html->find('main > .content-wrapper > .pagination li.next', 0);
+
+    // The last page has the next button, but it's disabled
+    if(strpos($next_button->class, 'disabled') === false) {
+      
+      // Free RAM and collect garbage
+      $html->clear();
+      gc_collect_cycles();
+
+      // Recursive call for the next page
+      $this->getMessagesRecursive($page + 1);
+
+    }
+
+  }
+
+  private function parseMessages($messages, $array = []) {
 
     foreach($messages as $message) {
 
@@ -155,7 +188,7 @@ class MessageGetter
         $paragraphs[] = $paragraph->innertext;
       }
 
-      array_push($messages_arr, [
+      array_push($array, [
         'id' => substr($message->id, 8),
         'title' => $message->find('.body .title a', 0)->innertext,
         'body' => implode('<br><br>', $paragraphs)
@@ -163,7 +196,7 @@ class MessageGetter
 
     }
 
-    return $messages_arr;
+    return $array;
 
   }
 
