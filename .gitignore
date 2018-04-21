@@ -2,4 +2,5 @@ config.ini
 composer.lock
 app/logs
 app/error_log
+app/cache
 vendor
