@@ -33,7 +33,8 @@ class RequestBuilder
    * @var Array
    */
   private $routes = [
-    'message/text' => 'TextMessageReceiver' /*,
+    'message/text' => 'TextMessageReceiver',
+    'postback' => 'PostbackReceiver' /*,
     'message/image' => 'ImageMessageReceiver',
     'message/video' => 'VideoMessageReceiver',
     'message/audio' => 'AudioMessageReceiver',
@@ -52,8 +53,8 @@ class RequestBuilder
    * @since 0.1
    */
   public function build() {
+
     $post_data = file_get_contents('php://input');
-    echo $post_data . PHP_EOL;
     $validation = ValidateRequest::validate($post_data);
     if(!$validation) {
       echo 'Wrong validation.';
@@ -73,14 +74,15 @@ class RequestBuilder
         $identifier = $event['type'];
       }
 
-      if(!$this->routes[$identifier]) {
-        echo 'Receiver could not be found.';
+      if(!isset($this->routes[$identifier])) {
+        echo 'Receiver ' . $identifier . ' could not be found.';
         return;
       }
 
       $request = new Request($this->routes[$identifier], $event);
       array_push($this->requests, $request);
     }
+
   }
 
   /**
@@ -90,7 +92,9 @@ class RequestBuilder
    * @since 0.1
    */
   public function getRequests() {
+
     return $this->requests;
+    
   }
   
 }

@@ -51,7 +51,6 @@ class LINERequest
    * @since 0.1
    */
   public function prepare($method, $url, $post_data) {
-    echo 'prepared!' . PHP_EOL;
     $this->method = $method;
     $this->url = $url;
     $this->post_data = $post_data;
@@ -73,8 +72,7 @@ class LINERequest
       'headers' => [
         'Authorization' => 'Bearer uBgDPwP+JjSKi9OahJu4yWJffmTqdhSSKwnOewXu4j/B2RgxKceO4OzAxRPedfTmoeWdKmxHweSg491JKJeXbFxaKwe58FiaMc5LAdqT3+siSFCg9PdIOhuh53TFGSOeixHMhe5y6i0imDdcSUKZ0wdB04t89/1O/w1cDnyilFU=',
         'Content-Type' => 'application/json'
-      ],
-      'debug' => true
+      ]
     ];
     if($this->method === 'POST') {
       $send_data['json'] = $this->post_data;
@@ -85,7 +83,7 @@ class LINERequest
       $send_data
     );
     
-    echo 'Response: ' . $response->getStatusCode() . $response->getBody();
+    echo 'Response: ' . $response->getStatusCode();
   }
 
 }

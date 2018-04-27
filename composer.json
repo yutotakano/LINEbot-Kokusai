@@ -11,11 +11,15 @@
   ],
   "require": {
     "guzzlehttp/guzzle": "6.3.0",
-    "sunra/php-simple-html-dom-parser": "1.5.2"
+    "sunra/php-simple-html-dom-parser": "1.5.2",
+    "monolog/monolog": "^1.23"
   },
   "autoload": {
     "psr-4": {
       "KokusaiIBLine\\": "src/"
-    }
+    },
+    "files": [
+      "src/Constants.php"
+    ]
   }
 }

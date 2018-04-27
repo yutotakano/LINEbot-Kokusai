@@ -30,9 +30,14 @@ if($requests) {
 }
 
 $log = ob_get_clean();
-$log .= PHP_EOL . "----------------------------" . PHP_EOL . PHP_EOL;
-$logFile = "logs/log_" . date("Y.m.d").".txt";
-file_put_contents($logFile, $log, FILE_APPEND);
-chmod($logFile, 0777);
+
+print_r($log);
+
+if(!empty(trim($log))) {
+  $log .= PHP_EOL . "----------------------------" . PHP_EOL . PHP_EOL;
+  $logFile = "logs/log_" . date("Y.m.d") . ".txt";
+  file_put_contents($logFile, $log, FILE_APPEND);
+  chmod($logFile, 0777);
+}
 
 http_response_code(200);

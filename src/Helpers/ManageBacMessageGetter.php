@@ -135,23 +135,125 @@ class ManageBacMessageGetter
   }
 
   /**
+   * 
+   */
+
+  /**
    * Get messages from /student/ib/messages as JSON.
    * 
    * @since 0.1
    */
-  public function get() {
+  public function getMainGroup() {
 
-    $this->getMessagesRecursive();
+    $this->getMessagesRecursive('/student/ib/messages');
+
+    return $this->messages;
+
+  }  
+
+  /**
+   * Get messages from /student/classes/10901407/messages as JSON.
+   * Japanese A: Literature SL
+   * 
+   * @since 0.1
+   */
+  public function getJASL() {
+
+    $this->getMessagesRecursive('/student/classes/10901407/messages');
 
     return $this->messages;
 
   }
 
-  private function getMessagesRecursive($page = 1) {
+  /**
+   * Get messages from /student/classes/10901409/messages as JSON.
+   * English A: Language and Literature SL
+   * 
+   * @since 0.1
+   */
+  public function getEASL() {
+
+    $this->getMessagesRecursive('/student/classes/10901409/messages');
+
+    return $this->messages;
+
+  }
+
+  /**
+   * Get messages from /student/classes/10901414/messages as JSON.
+   * History
+   * 
+   * @since 0.1
+   */
+  public function getHSL() {
+
+    $this->getMessagesRecursive('/student/classes/10901414/messages');
+
+    return $this->messages;
+
+  }
+
+  /**
+   * Get messages from /student/classes/10901417/messages as JSON.
+   * Chemistry HL
+   * 
+   * @since 0.1
+   */
+  public function getCHL() {
+
+    $this->getMessagesRecursive('/student/classes/10901417/messages');
+
+    return $this->messages;
+
+  }
+
+  /**
+   * Get messages from /student/classes/10901419/messages as JSON.
+   * Physics
+   * 
+   * @since 0.1
+   */
+  public function getPHL() {
+
+    $this->getMessagesRecursive('/student/classes/10901419/messages');
+
+    return $this->messages;
+
+  }
+
+  /**
+   * Get messages from /student/classes/10901421/messages as JSON.
+   * Mathematics HL
+   * 
+   * @since 0.1
+   */
+  public function getMHL() {
+
+    $this->getMessagesRecursive('/student/classes/10901421/messages');
+
+    return $this->messages;
+
+  }
+
+  /**
+   * Get messages from /student/classes/10901422/messages as JSON.
+   * Theory of Knowledge
+   * 
+   * @since 0.1
+   */
+  public function getTOK() {
+
+    $this->getMessagesRecursive('/student/classes/10901422/messages');
+
+    return $this->messages;
+
+  }
+
+  private function getMessagesRecursive($url, $page = 1) {
 
     $response = $this->client->request(
       'GET',
-      '/student/ib/messages/page/' . (string)$page,
+      $url . '/page/' . (string)$page,
       [
         'cookies' => $this->session
       ]
@@ -173,7 +275,7 @@ class ManageBacMessageGetter
       gc_collect_cycles();
 
       // Recursive call for the next page
-      $this->getMessagesRecursive($page + 1);
+      $this->getMessagesRecursive($url, $page + 1);
 
     }
 

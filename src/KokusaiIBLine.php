@@ -54,7 +54,7 @@ class KokusaiIBLine
     $message_getter->prepare();
     
     // Use the stored tokens to get the messages in the IB students group (grade-wide)
-    $messages_data = $message_getter->get();
+    $messages_data = $message_getter->getMainGroup();
 
     // Initiate a receiver, which checks if there are new messages, and sends the new ones
     $receiver = new ManageBacMessageReceiver($messages_data);

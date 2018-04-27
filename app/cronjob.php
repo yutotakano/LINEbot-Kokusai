@@ -13,11 +13,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use KokusaiIBLine\Builders\RequestBuilder;
 use KokusaiIBLine\KokusaiIBLine;
 
-$config = parse_ini_file(__DIR__ . '/../config.ini');
-
-define('MANAGEBAC_DOMAIN', $config['ManageBac_schoolDomains']);
-define('MANAGEBAC_LOGIN', $config['ManageBac_login']);
-define('MANAGEBAC_PASSWORD', $config['ManageBac_password']);
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
