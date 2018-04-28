@@ -48,7 +48,7 @@ class KokusaiIBLine
    */
   public function checkMessages() {
 
-    $groups = ['MainGroup', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK'];
+    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK'];
     
     foreach($groups as $group) {
 
@@ -61,7 +61,7 @@ class KokusaiIBLine
       $messages_data = $message_getter->{'get' . $group}();
 
       // Initiate a receiver, which checks if there are new messages, and sends the new ones
-      $receiver = new ManageBacMessageReceiver($messages_data, 'IB' . $group . 'Messages.json');
+      $receiver = new ManageBacMessageReceiver($messages_data, $group);
 
     }
 

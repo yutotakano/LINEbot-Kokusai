@@ -143,7 +143,7 @@ class ManageBacMessageGetter
    * 
    * @since 0.1
    */
-  public function getMainGroup() {
+  public function getAll() {
 
     $this->getMessagesRecursive('/student/ib/messages');
 

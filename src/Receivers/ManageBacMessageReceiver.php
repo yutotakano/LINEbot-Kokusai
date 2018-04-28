@@ -22,32 +22,48 @@ class ManageBacMessageReceiver
 {
 
   /**
+   * Conatins the mapping between subject IDs and their comprehensive names
+   * 
+   * @var Array
+   */
+  private $subject_mapping = [
+    'All' => 'IB 29th',
+    'JASL' => 'Japanese A SL',
+    'EASL' => 'English A SL',
+    'HSL' => 'History SL',
+    'CHL' => 'Chemistry HL',
+    'PHL' => 'Physics HL',
+    'MHL' => 'Mathematics HL',
+    'TOK' => 'ToK'
+  ];
+
+  /**
    * Constructor and basic handler.
    * 
    * @param Array $current_messages The array-parsed messages in the IB Grade board.
    * @param String $filename The cache filename for the messages.
    * @since 0.1
    */
-  public function __construct($current_messages, $filename='IBMessages.json') {
+  public function __construct($current_messages, $subject = 'All') {
 
     // Create cache folder if not exist
     if(!file_exists(__DIR__ . '/../../app/cache')) {
       mkdir(__DIR__ . '/../../app/cache', 0777, true);
     }
 
-    if(!file_exists(__DIR__ . '/../../app/cache/' . $filename)) {
+    if(!file_exists(__DIR__ . '/../../app/cache/IB' . $subject . 'Messages.json')) {
       
-      $previous_messages = $current_messages;
+      $previous_messages = [];
     
     } else { 
 
       $previous_messages = @json_decode(
-        file_get_contents(__DIR__ . '/../../app/cache/' . $filename)
+        file_get_contents(__DIR__ . '/../../app/cache/IB' . $subject . 'Messages.json')
       , true) ?? [];
 
     }
 
-    file_put_contents(__DIR__ . '/../../app/cache/' . $filename, json_encode($current_messages));
+    file_put_contents(__DIR__ . '/../../app/cache/IB' . $subject . 'Messages.json', json_encode($current_messages));
 
     // Use a custom diff function (udiff) instead of array_diff
     // because array_diff does not work on multidimensional arrays
@@ -58,7 +74,7 @@ class ManageBacMessageReceiver
     });
 
     // Get list of recipients to filter before sending the messages
-    $recipients = $this->getRecipients();
+    $recipients = $this->getRecipients($subject);
 
     $users = array_filter($recipients, function($item) {
       return ($item['chatType'] == 'user');
@@ -76,13 +92,14 @@ class ManageBacMessageReceiver
     foreach($new_messages as $new_message) {
 
       // Cut down and add ellipsis for message over 200 characters
-      $new_message['body'] = (strlen($new_message['body']) > 1995) ? substr($new_message['body'], 0, 1995) . '...' : $new_message['body']; 
+      $new_message['body'] = (strlen($new_message['body']) > 1800) ? substr($new_message['body'], 0, 1800) . '...' : $new_message['body']; 
       
       $newline_replacers = ['<br />', '<br>', '<br/>'];
+      $title = $this->subject_mapping[$subject];
       $message_data = [
         [
           'type' => 'text',
-          'text' => str_ireplace($newline_replacers, "\n", $new_message['body'])
+          'text' => '▨' . $title . ': ' . $new_message['title'] . "\n\n" . str_ireplace($newline_replacers, "\n", $new_message['body'])
         ]
       ];
 
@@ -117,14 +134,17 @@ class ManageBacMessageReceiver
    * @return Array
    * @since 0.1
    */
-  public function getRecipients() {
+  public function getRecipients($subject = 'All') {
+
+    // Lowercase them
+    $database_subjectname = strtolower($subject);
 
     $conn = new \mysqli(DB_SERVERNAME, DB_USERNAME, DB_PASSWORD, DB_DBNAME);
     if($conn->connect_error) {
       return false;
     }
 
-    $sql = "SELECT id, chatType, messageGroup FROM ib_recipients WHERE messageGroup = 'all'";
+    $sql = "SELECT id, chatType, messageGroup FROM ib_recipients WHERE messageGroup = '{$database_subjectname}'";
 
     $result = $conn->query($sql);
 

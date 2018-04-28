@@ -83,6 +83,11 @@ class TextMessageReceiver
             ]
           ]);
           break;
+        default:
+        array_push($reply['messages'], [
+          'type' => 'text',
+          'text' => strtolower(substr($text, 13, -9)) . ' doesn\'t exist.'
+        ])
       }
 
       if(isset($event['source']['roomId'])) {
