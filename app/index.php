@@ -16,6 +16,7 @@ use KokusaiIBLine\KokusaiIBLine;
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Start recording output
 ob_start();
 
 // Build instance of Request.
@@ -31,8 +32,7 @@ if($requests) {
 
 $log = ob_get_clean();
 
-print_r($log);
-
+// Don't write in log if there was no output
 if(!empty(trim($log))) {
   $log .= PHP_EOL . "----------------------------" . PHP_EOL . PHP_EOL;
   $logFile = "logs/log_" . date("Y.m.d") . ".txt";
