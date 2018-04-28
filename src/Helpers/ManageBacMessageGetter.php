@@ -267,6 +267,8 @@ class ManageBacMessageGetter
 
     $next_button = $html->find('main > .content-wrapper > .pagination li.next', 0);
 
+    if(!$next_button) return;
+
     // The last page has the next button, but it's disabled
     if(strpos($next_button->class, 'disabled') === false) {
       

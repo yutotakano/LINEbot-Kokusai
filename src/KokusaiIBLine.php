@@ -48,16 +48,22 @@ class KokusaiIBLine
    */
   public function checkMessages() {
 
-    $message_getter = new ManageBacMessageGetter();
-
-    // Login to ManageBac and store the tokens
-    $message_getter->prepare();
+    $groups = ['MainGroup', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK'];
     
-    // Use the stored tokens to get the messages in the IB students group (grade-wide)
-    $messages_data = $message_getter->getMainGroup();
+    foreach($groups as $group) {
 
-    // Initiate a receiver, which checks if there are new messages, and sends the new ones
-    $receiver = new ManageBacMessageReceiver($messages_data);
+      $message_getter = new ManageBacMessageGetter();
+
+      // Login to ManageBac and store the tokens
+      $message_getter->prepare();
+
+      // Use the stored tokens to get the messages in the IB students group (grade-wide)
+      $messages_data = $message_getter->{'get' . $group}();
+
+      // Initiate a receiver, which checks if there are new messages, and sends the new ones
+      $receiver = new ManageBacMessageReceiver($messages_data, 'IB' . $group . 'Messages.json');
+
+    }
 
   }
 
