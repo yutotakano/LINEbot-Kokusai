@@ -31,14 +31,98 @@ class TextMessageReceiver
    */
   private $classes = [
     [
-      'thumbnailImageUrl' => 'https://s3-ap-southeast-1.amazonaws.com/subscriber.images/chemistry/2017/04/21115856/bott.png',
-      'title' => 'Chemistry HL',
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_All.png',
+      'title' => 'Kokusai Class of 2020 ("All")',
+      'text' => 'Main Group',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"all"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_JASL.png',
+      'title' => 'Japanese A: Lit SL ("JASL")',
+      'text' => 'Mr. Kaihotsu',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"jasl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_EASL.png',
+      'title' => 'English A: LangLit SL ("EASL")',
+      'text' => 'Mr. Greatjhead',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"easl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_HSL.png',
+      'title' => 'History SL ("HSL")',
+      'text' => 'Mr. Brown, Mr. Aoki, Ms. Jin',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"hsl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_CHL.png',
+      'title' => 'Chemistry HL ("CHL")',
       'text' => 'Ms. Kirkpatrick',
       'actions' => [
         [
           'type' => 'postback',
           'label' => 'Subscribe',
           'data' => '{"action":"subscribe_class","data":{"class_code":"chl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_PHL.png',
+      'title' => 'Physics HL ("PHL")',
+      'text' => 'Ms. Quema',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"phl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_MHL.png',
+      'title' => 'Mathematics HL ("MHL")',
+      'text' => 'Ms. Kohsai, Mr. Dean, Ms. Tamura, Mr, Boodram',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"mhl"}}'
+        ]
+      ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_TOK.png',
+      'title' => 'Theory of Knowledge ("TOK")',
+      'text' => 'Mr. Dean, Mr. Nomura, Mr. Abbenes, Mr. Boodram',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"mhl"}}'
         ]
       ]
     ]
@@ -53,12 +137,66 @@ class TextMessageReceiver
    */
   public function __construct($event) {
 
+    print_r($this->classes);
+
     $text = trim($event['message']['text']);
 
     $reply = [
       'replyToken' => $event['replyToken'],
       'messages' => []
     ];
+
+    if(strtolower(substr($text, 0, 17)) === 'unsubscribe from ') {
+      
+      switch(strtolower(substr($text, 17, -9))) {
+        case 'all':
+        case 'jasl':
+        case 'easl':
+        case 'hsl':
+        case 'chl':
+        case 'phl':
+        case 'mhl':
+        case 'tok':
+          $messageGroup = strtolower(substr($text, 17, -9));
+          break;
+        default:
+          array_push($reply['messages'], [
+            'type' => 'text',
+            'text' => 'There is no group by the name ' . strtolower(substr($text, 17, -9))
+          ]);
+      }
+
+      if(isset($event['source']['roomId'])) {
+        $id = $event['source']['roomId'];
+        $chatType = 'room';
+      } else if(isset($event['source']['groupId'])) {
+        $id = $event['source']['groupId'];
+        $chatType = 'group';
+      } else if(isset($event['source']['userId'])) {
+        $id = $event['source']['userId'];
+        $chatType = 'user';
+      }
+
+      if(isset($messageGroup)) {
+
+        // Remove recipient. Returns true on success, false or error string on failure.
+        $status = $this->removeRecipient($id, $chatType, $messageGroup);
+
+        if($status === true) {
+          array_push($reply['messages'], [
+            'type' => 'text',
+            'text' => 'You are no longer receiving messages from the "' . $messageGroup . '" group.'
+          ]);
+        } else {
+          echo $status;
+          array_push($reply['messages'], [
+            'type' => 'text',
+            'text' => ($status ?: 'An unknown error occurred.')
+          ]);
+        }
+      }
+
+    }
 
     if(strtolower(substr($text, 0, 13)) === 'subscribe to ') {
 
@@ -75,8 +213,11 @@ class TextMessageReceiver
           break;
         case '':
           array_push($reply['messages'], [
+            'type' => 'text',
+            'text' => 'Here\'s a list of message groups you can subscribe to:'
+          ], [
             'type' => 'template',
-            'altText' => 'Here\'s a list of message groups you can subscribe to... ',
+            'altText' => 'Please view this on mobile: ',
             'template' => [
               'type' => 'carousel',
               'columns' => $this->classes
@@ -84,10 +225,10 @@ class TextMessageReceiver
           ]);
           break;
         default:
-        array_push($reply['messages'], [
-          'type' => 'text',
-          'text' => strtolower(substr($text, 13, -9)) . ' doesn\'t exist.'
-        ])
+          array_push($reply['messages'], [
+            'type' => 'text',
+            'text' => 'There is no group by the name ' . strtolower(substr($text, 13, -9))
+          ]);
       }
 
       if(isset($event['source']['roomId'])) {
@@ -102,10 +243,9 @@ class TextMessageReceiver
       }
 
       if(isset($messageGroup)) {
+
         // Add recipient. Returns true on success, false or error string on failure.
         $status = $this->addRecipient($id, $chatType, $messageGroup);
-
-        print_r($status ? 'true' : 'false');
 
         if($status === true) {
           array_push($reply['messages'], [
@@ -116,7 +256,7 @@ class TextMessageReceiver
           echo $status;
           array_push($reply['messages'], [
             'type' => 'text',
-            'text' => ($status ?: 'An unknown error occurred. Maybe you\'re already subscribed to this message group?')
+            'text' => ($status ?: 'An unknown error occurred.')
           ]);
         }
       }
@@ -209,49 +349,105 @@ class TextMessageReceiver
   /**
    * Add recipient to database.
    * 
-   * @return Boolean
+   * @param String $id The LINE id of the room, group or user
+   * @param String $chatType Either 'room', 'group', or 'user'
+   * @param String $messageGroup Lowercase subject codes
+   * @return Boolean|String
    * @since 0.1
    */
-  public function addRecipient($id, $chatType, $messageGroup) {
+  private function addRecipient($id, $chatType, $messageGroup) {
 
     $conn = new \mysqli(DB_SERVERNAME, DB_USERNAME, DB_PASSWORD, DB_DBNAME);
     if($conn->connect_error) {
-      echo $conn->connect_error;
-      return false;
+      return $conn->connect_error;
     }
 
     $sql = "SELECT * FROM ib_recipients WHERE id=? AND chatType=? AND messageGroup=?";
 
     $stmt = $conn->prepare($sql);
+    if(!$stmt) {
+      return 'Error in database query';
+    }
     $stmt->bind_param('sss', $id, $chatType, $messageGroup);
 
     $stmt->execute();
 
+    // num_rows can only be executed after storing the results
     $stmt->store_result();
 
-    if(!$stmt || $stmt->num_rows !== 0) {
-      // Row with same stuff exists.
-      $stmt->close();
-      return 'You\'re already subscribed to this message group!';
-    }
+    // Store in a variable so we can close stmt
+    $select_num_rows = $stmt->num_rows();
 
+    // Close stmt and unset the variable for further cleaning
     $stmt->close();
     unset($stmt);
+
+    if($select_num_rows !== 0) {
+      // Row with same stuff exists.
+      return 'You\'re already subscribed to this message group!';
+    }
 
     $sql = "INSERT INTO ib_recipients (id, chatType, messageGroup) VALUES (?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
+    if(!$stmt) {
+      return 'Error in database query';
+    }
     $stmt->bind_param('sss', $id, $chatType, $messageGroup);
 
     $stmt->execute();
 
-    if(!$stmt || $stmt->affected_rows !== 1) {
+    if($stmt->affected_rows !== 1) {
       $error = $stmt->error;
       $stmt->close();
       return 'Database error: ' . $error;
     }
     
     $stmt->close();
+    return true;
+
+  }
+
+  /**
+   * Remove a recipient from the database.
+   * 
+   * @param String $id The LINE id of the room, group or user
+   * @param String $chatType Either 'room', 'group', or 'user'
+   * @param String $messageGroup Lowercase subject codes
+   * @return Boolean|String
+   * @since 0.1
+   */
+  private function removeRecipient($id, $chatType, $messageGroup) {
+    
+    $conn = new \mysqli(DB_SERVERNAME, DB_USERNAME, DB_PASSWORD, DB_DBNAME);
+    if($conn->connect_error) {
+      return $conn->connect_error;
+    }
+
+    $sql = "DELETE FROM ib_recipients WHERE id=? AND chatType=? AND messageGroup=?";
+
+    $stmt = $conn->prepare($sql);
+    if(!$stmt) {
+      return 'Error in database query';
+    }
+    $stmt->bind_param('sss', $id, $chatType, $messageGroup);
+
+    $stmt->execute();
+
+    // Store affected rows in a variable so we can close stmt
+    $delete_affected_rows = $stmt->affected_rows;
+
+    // Close stmt
+    $stmt->close();
+
+    if($delete_affected_rows === 0) {
+      // Deleted no rows
+      return 'You were never subscribed to this group!';
+    } else if($delete_affected_rows > 1) {
+      // Deleted multiple entries... damn
+      return 'Critical database error: Multiple entries deleted';
+    }
+
     return true;
 
   }

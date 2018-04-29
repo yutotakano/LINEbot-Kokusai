@@ -2,6 +2,8 @@
 
 $config = parse_ini_file(__DIR__ . '/../config.ini');
 
+define('APP_ROOT', $config['app_root']);
+
 define('MANAGEBAC_DOMAIN', $config['ManageBac_schoolDomains']);
 define('MANAGEBAC_LOGIN', $config['ManageBac_login']);
 define('MANAGEBAC_PASSWORD', $config['ManageBac_password']);
