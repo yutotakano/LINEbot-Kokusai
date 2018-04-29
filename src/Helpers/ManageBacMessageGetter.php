@@ -3,6 +3,8 @@
 /**
  * A part of the Kokusai IB 29th LINE Bot Webhook Receiver.
  * 
+ * 
+ * TODO: Move authentication to a separate file (right now the cronjob authenticates for every message group - it should only be once at the start)
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
  * @version 0.1
@@ -139,7 +141,7 @@ class ManageBacMessageGetter
    */
 
   /**
-   * Get messages from /student/ib/messages as JSON.
+   * Get messages from /student/ib/messages as an associative array.
    * 
    * @since 0.1
    */
@@ -152,7 +154,7 @@ class ManageBacMessageGetter
   }  
 
   /**
-   * Get messages from /student/classes/10901407/messages as JSON.
+   * Get messages from /student/classes/10901407/messages as an associative array.
    * Japanese A: Literature SL
    * 
    * @since 0.1
@@ -166,7 +168,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901409/messages as JSON.
+   * Get messages from /student/classes/10901409/messages as an associative array.
    * English A: Language and Literature SL
    * 
    * @since 0.1
@@ -180,7 +182,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901414/messages as JSON.
+   * Get messages from /student/classes/10901414/messages as an associative array.
    * History
    * 
    * @since 0.1
@@ -194,7 +196,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901417/messages as JSON.
+   * Get messages from /student/classes/10901417/messages as an associative array.
    * Chemistry HL
    * 
    * @since 0.1
@@ -208,7 +210,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901419/messages as JSON.
+   * Get messages from /student/classes/10901419/messages as an associative array.
    * Physics
    * 
    * @since 0.1
@@ -222,7 +224,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901421/messages as JSON.
+   * Get messages from /student/classes/10901421/messages as an associative array.
    * Mathematics HL
    * 
    * @since 0.1
@@ -236,7 +238,7 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901422/messages as JSON.
+   * Get messages from /student/classes/10901422/messages as an associative array.
    * Theory of Knowledge
    * 
    * @since 0.1
