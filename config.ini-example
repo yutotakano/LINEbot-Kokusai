@@ -1,3 +1,7 @@
+; App root URL [has to be HTTPS] (used for dierctly linking assets, etc)
+; No slash required at the end
+app_root = "https://yourlinebot.com/kokusai"
+
 ; School domain name (the part before .managebac.com)
 ManageBac_schoolDomains = "schoolname"
 ; Login email address (student)
