@@ -30,7 +30,7 @@ class ValidateRequest
     $channel_secret = '410d22bf914c3a63f220f566213452f8';
     $hash = hash_hmac('sha256', $post_data, $channel_secret, true); // TODO: Set to true before production
     $signature = base64_encode($hash);
-    if($signature !== $_SERVER['HTTP_X_LINE_SIGNATURE']) {
+    if(!isset($_SERVER['HTTP_X_LINE_SIGNATURE']) || $signature !== $_SERVER['HTTP_X_LINE_SIGNATURE']) {
       return false;
     } else {
       return true;
