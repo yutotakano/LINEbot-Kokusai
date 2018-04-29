@@ -10,6 +10,7 @@
 
 namespace KokusaiIBLine;
 
+use KokusaiIBLine\Helpers\ManageBacAuthenticator;
 use KokusaiIBLine\Helpers\ManageBacMessageGetter;
 use KokusaiIBLine\Receivers\ManageBacMessageReceiver;
 
@@ -49,13 +50,18 @@ class KokusaiIBLine
   public function checkMessages() {
 
     $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK'];
+
+    $managebac = new ManageBacAuthenticator();
+    $managebac->authenticate();
     
     foreach($groups as $group) {
 
-      $message_getter = new ManageBacMessageGetter();
-
-      // Login to ManageBac and store the tokens
-      $message_getter->prepare();
+      // Construct, and use the session we created before.
+      $message_getter = new ManageBacMessageGetter(
+        $managebac->csrf_token,
+        $managebac->session,
+        $managebac->client
+      );
 
       // Use the stored tokens to get the messages in the IB students group (grade-wide)
       $messages_data = $message_getter->{'get' . $group}();

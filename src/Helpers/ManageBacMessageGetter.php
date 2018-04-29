@@ -4,7 +4,6 @@
  * A part of the Kokusai IB 29th LINE Bot Webhook Receiver.
  * 
  * 
- * TODO: Move authentication to a separate file (right now the cronjob authenticates for every message group - it should only be once at the start)
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
  * @version 0.1
@@ -18,7 +17,7 @@ use Exception;
 use Sunra\PhpSimple\HtmlDomParser;
 
 /**
- * Construct a ManageBac session and grab the messages for the IB group.
+ * Grab the messages for the IB group using the session obtained in ManageBacAuthenticator.
  * (should exist for any grade - checked with Sufasi)
  * 
  * @since 0.1
@@ -33,7 +32,6 @@ class ManageBacMessageGetter
    */
   private $csrf_token;
 
-  
   /**
    * Will contain the ManageBac Guzzle cookie jar to pass in requests.
    * @var CookieJar
@@ -53,92 +51,20 @@ class ManageBacMessageGetter
   private $messages = [];
 
   /**
-   * Constructor function to create a Guzzle client to use later.
+   * Fill in the required fields
    * 
+   * @param String $csrf_token Pass in POST requests
+   * @param CookieJar $session Cookie Jar for Guzzle requests
+   * @param GuzzleHttp\Client $client Client to always use for this session
    * @since 0.1
    */
-  public function __construct() {
-    
-    $this->client = new GuzzleHttp\Client([
-      'base_uri' => 'https://' . MANAGEBAC_DOMAIN . '.managebac.com/'
-    ]);
+  public function __construct($csrf_token, $session, $client) {
+
+    $this->csrf_token = $csrf_token;
+    $this->session = $session;
+    $this->client = $client;
 
   }
-
-  /**
-   * Prepare, login, and store the cookies' jar and csrf_token for ManageBac requests.
-   * 
-   * @since 0.1
-   */
-  public function prepare() {
-
-    $cookieJar = new GuzzleHttp\Cookie\CookieJar;
-
-    $loginResponse = $this->client->request(
-      'GET',
-      'login',
-      [
-        'cookies' => $cookieJar,
-        'allow_redirects' => false
-      ]
-    );
-
-    if($loginResponse->getStatusCode() === 404) {
-      throw new Exception('ManageBac does not exist on this domain.');
-    }
-
-    $doc = new DOMDocument();
-    @$doc->loadHTML($loginResponse->getBody());
-    $nodes = $doc->getElementsByTagName("meta");
-    
-    // Get csrf_token, required for logging in
-    for($i = 0; $i < $nodes->length; $i++) {
-      $meta = $nodes->item($i);
-      if($meta->getAttribute("name") == "csrf-token") {
-        $csrf_token = $meta->getAttribute("content");
-      }
-    }
-
-
-    $sessionResponse = $this->client->request(
-      'POST',
-      'sessions',
-      [
-        'cookies' => $cookieJar,
-        'allow_redirects' => false,
-        'form_params' => [
-          'login' => MANAGEBAC_LOGIN,
-          'password' => MANAGEBAC_PASSWORD,
-          'remember_me' => '0',
-          'commit' => 'Sign-in',
-          'utf' => '%E2%9C%93',
-          'authenticity_token' => $csrf_token
-        ]
-      ]
-    );
-
-    if($sessionResponse->getStatusCode() === 200) {
-      throw new Exception('Invalid ManageBac credentials provided.');
-    }
-
-    $final_location = $sessionResponse->getHeader('Location')[0];
-
-    if(strpos($final_location, '/student') !== false) {
-      
-      $this->csrf_token = $csrf_token;
-      $this->session = $cookieJar;
-
-    } else {
-      
-      throw new Exception('Invalid credentials.');
-
-    }
-
-  }
-
-  /**
-   * 
-   */
 
   /**
    * Get messages from /student/ib/messages as an associative array.
@@ -251,6 +177,13 @@ class ManageBacMessageGetter
 
   }
 
+  /**
+   * Recursively get the message elements on each page to pass into parseMessages()
+   * 
+   * @param String $url The base relative URL for the messages
+   * @param Integer $page The page number
+   * @since 0.1
+   */
   private function getMessagesRecursive($url, $page = 1) {
 
     $response = $this->client->request(
@@ -285,6 +218,14 @@ class ManageBacMessageGetter
 
   }
 
+  /**
+   * Parse the messages from HTML elements into an associative array and return it
+   * 
+   * @param Array $messages An array of HTML elements each containing a message
+   * @param Array $array An array to push the results into and return it
+   * @return Array
+   * @since 0.1
+   */
   private function parseMessages($messages, $array = []) {
 
     foreach($messages as $message) {

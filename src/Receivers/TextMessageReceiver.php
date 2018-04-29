@@ -185,7 +185,7 @@ class TextMessageReceiver
         if($status === true) {
           array_push($reply['messages'], [
             'type' => 'text',
-            'text' => 'You are no longer receiving messages from the "' . $messageGroup . '" group.'
+            'text' => ($chatType === 'user' ? 'You' : 'This ' . $chatType) . ' is no longer receiving messages from the "' . $messageGroup . '" group.'
           ]);
         } else {
           echo $status;
@@ -250,7 +250,7 @@ class TextMessageReceiver
         if($status === true) {
           array_push($reply['messages'], [
             'type' => 'text',
-            'text' => 'Successfully subscribed you to the "' . $messageGroup . '" message group.'
+            'text' => 'Successfully subscribed ' . ($chatType === 'user' ? 'you' : 'this ' . $chatType) . ' to the "' . $messageGroup . '" message group.'
           ]);
         } else {
           echo $status;
