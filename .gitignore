@@ -4,3 +4,4 @@ app/logs
 app/error_log
 app/cache
 vendor
+assets/Thumbs.db
