@@ -232,6 +232,9 @@ class ManageBacMessageGetter
 
       $paragraphs = [];
       foreach($message->find('.body p') as $paragraph) {
+        foreach($paragraph->find('a') as $link) {
+          $link->outertext = $link->innertext . ' (' . $link->href . ')';
+        }
         $paragraphs[] = $paragraph->innertext;
       }
 
