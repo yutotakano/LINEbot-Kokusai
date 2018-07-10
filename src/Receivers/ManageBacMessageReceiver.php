@@ -11,6 +11,7 @@
 namespace KokusaiIBLine\Receivers;
 
 use KokusaiIBLine\Helpers\LINERequest;
+use \Exception;
 
 /**
  * Check if there are new IB Messages and if yes send them to the group chats
@@ -121,7 +122,12 @@ class ManageBacMessageReceiver
           'to' => $recipientNotUser['id'],
           'messages' => $message_data
         ]);
-        $request->send();
+        try {
+          $request->send();
+        } catch (Exception $e) {
+          print_r($message_data);
+          echo (string)$e;
+        }
 
       }
     }

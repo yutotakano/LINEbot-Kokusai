@@ -11,6 +11,7 @@
 namespace KokusaiIBLine\Helpers;
 
 use GuzzleHttp;
+use \Exception;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -62,6 +63,7 @@ class LINERequest
    * @since 0.1
    */
   public function send() {
+
     if(!$this->url) {
       return false;
     }
@@ -77,13 +79,21 @@ class LINERequest
     if($this->method === 'POST') {
       $send_data['json'] = $this->post_data;
     }
-    $response = $client->request(
-      $this->method,
-      $this->url,
-      $send_data
-    );
+    try {
+
+      $response = $client->request(
+        $this->method,
+        $this->url,
+        $send_data
+      );
     
-    echo 'Response: ' . $response->getStatusCode();
+      echo 'Response: ' . $response->getStatusCode() . PHP_EOL;
+
+    } catch (Exception $e) {
+      echo 'fail';
+      print_r($send_data);
+      echo (string)$e;
+    }
   }
 
 }
