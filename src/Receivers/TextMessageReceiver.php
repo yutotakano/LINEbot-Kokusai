@@ -263,6 +263,16 @@ class TextMessageReceiver
 
     }
 
+    if(strtolower($text) === 'send help') {
+      array_push($reply['messages'], [
+        'type' => 'text',
+        'text' => "Here is what you can do:
+◍ \"subscribe to messages\" (shows a list of groups you can subscribe to)
+◍ \"subscribe to <groupNameHere> messages\" (subscribes you to that group)
+◍ \"unsubscribe from <groupNameHere> messages\" (unsubscribes you from that group)
+◍ \"send help\" (sends this)"]);
+    }
+
     // if(strpos(strtolower($text), 'when is the next biology class') !== false ||
     //    strpos(strtolower($text), 'when is the next bio class') !== false) {
     //   $now = new DateTime();
