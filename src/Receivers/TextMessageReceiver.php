@@ -57,7 +57,7 @@ class TextMessageReceiver
     [
       'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_EASL.png',
       'title' => 'English A: LangLit SL ("EASL")',
-      'text' => 'Mr. Greatjhead',
+      'text' => 'Mr. Greathead',
       'actions' => [
         [
           'type' => 'postback',
