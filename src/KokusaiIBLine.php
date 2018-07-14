@@ -49,7 +49,7 @@ class KokusaiIBLine
    */
   public function checkMessages() {
 
-    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK'];
+    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK', 'EE'];
 
     $managebac = new ManageBacAuthenticator();
     $managebac->authenticate();

@@ -125,6 +125,18 @@ class TextMessageReceiver
           'data' => '{"action":"subscribe_class","data":{"class_code":"mhl"}}'
         ]
       ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_EE.png',
+      'title' => 'Extended Essay ("EE")',
+      'text' => 'Ms. Vaughns',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"ee"}}'
+        ]
+      ]
     ]
   ];
 
@@ -209,6 +221,7 @@ class TextMessageReceiver
         case 'phl':
         case 'mhl':
         case 'tok':
+        case 'ee':
           $messageGroup = strtolower(substr($text, 13, -9));
           break;
         case '':

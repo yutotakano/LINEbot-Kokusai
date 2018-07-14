@@ -178,6 +178,20 @@ class ManageBacMessageGetter
   }
 
   /**
+   * Get messages from /student/groups/10902178/messages as an associative array.
+   * Extended Essay Group
+   * 
+   * @since 0.1 
+   */
+  public function getEE() {
+
+    $this->getMessagesRecursive('/student/groups/10902178/messages');
+
+    return $this->messages;
+    
+  }
+
+  /**
    * Recursively get the message elements on each page to pass into parseMessages()
    * 
    * @param String $url The base relative URL for the messages
@@ -232,15 +246,14 @@ class ManageBacMessageGetter
 
       $paragraphs = [];
       foreach($message->find('.body p') as $paragraph) {
-        foreach($paragraph->find('a') as $link) {
-          $link->outertext = $link->innertext . ' (' . $link->href . ')';
-        }
         $paragraphs[] = $paragraph->innertext;
       }
 
       array_push($array, [
         'id' => substr($message->id, 8),
         'title' => $message->find('.body .title a', 0)->innertext,
+        'author' => $message->find('.header strong', 0)->innertext,
+        'category' => $message->find('.header em', 0)->innertext ?? null,
         'body' => implode('<br><br>', $paragraphs)
       ]);
 
