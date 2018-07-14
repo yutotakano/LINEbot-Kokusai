@@ -11,6 +11,7 @@
 namespace KokusaiIBLine\Receivers;
 
 use KokusaiIBLine\Helpers\LINERequest;
+use KokusaiIBLine\Helpers\HTMLMessageToLINEFlex;
 use \Exception;
 
 /**
@@ -21,22 +22,6 @@ use \Exception;
  */
 class ManageBacMessageReceiver
 {
-
-  /**
-   * Conatins the mapping between subject IDs and their comprehensive names
-   * 
-   * @var Array
-   */
-  private $subject_mapping = [
-    'All' => 'IB 29th',
-    'JASL' => 'Japanese A SL',
-    'EASL' => 'English A SL',
-    'HSL' => 'History SL',
-    'CHL' => 'Chemistry HL',
-    'PHL' => 'Physics HL',
-    'MHL' => 'Mathematics HL',
-    'TOK' => 'ToK'
-  ];
 
   /**
    * Constructor and basic handler.
@@ -92,42 +77,41 @@ class ManageBacMessageReceiver
     // Loop for every message before every recipient
     foreach($new_messages as $new_message) {
 
-      // Cut down and add ellipsis for message over 200 characters
-      $new_message['body'] = (strlen($new_message['body']) > 1800) ? substr($new_message['body'], 0, 1800) . '...' : $new_message['body']; 
-      
-      $newline_replacers = ['<br />', '<br>', '<br/>'];
-      $title = $this->subject_mapping[$subject];
-      $message_data = [
-        [
-          'type' => 'text',
-          'text' => '▨' . $title . ': ' . $new_message['title'] . "\n\n" . str_ireplace($newline_replacers, "\n", $new_message['body'])
-        ]
-      ];
+      $message_data = HTMLMessageToLINEFlex::convert(
+        $new_message['id'],
+        $new_message['title'],
+        $new_message['body'],
+        $new_message['author'],
+        $subject
+      );
 
-      if(!empty($users)) {
+      // Since sending to multiple users is different from sending to groups/rooms
+      // Send to users first, using multicast. Simultaneously sends.
+      // if(!empty($users)) {
         
-        $request = new LINERequest();
-        $request->prepare('POST', 'message/multicast', [
-          'to' => array_column($users, 'id'),
-          'messages' => $message_data
-        ]);
-        $request->send();
+      //   $request = new LINERequest();
+      //   $request->prepare('POST', 'message/multicast', [
+      //     'to' => array_column($users, 'id'),
+      //     'messages' => [
+      //       $message_data
+      //     ]
+      //   ]);
+      //   $request->send();
 
-      }
+      // }
 
-      foreach(array_merge($groups, $rooms) as $recipientNotUser) {
+      // Next, send to each group or room one by one.
+      foreach(array_merge($users, $groups, $rooms) as $recipient) {
 
         $request = new LINERequest();
         $request->prepare('POST', 'message/push', [
-          'to' => $recipientNotUser['id'],
-          'messages' => $message_data
+          'to' => $recipient['id'],
+          'messages' => [
+            $message_data
+          ]
         ]);
-        try {
-          $request->send();
-        } catch (Exception $e) {
-          print_r($message_data);
-          echo (string)$e;
-        }
+        
+        $request->send();
 
       }
     }

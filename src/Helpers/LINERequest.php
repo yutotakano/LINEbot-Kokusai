@@ -86,13 +86,12 @@ class LINERequest
         $this->url,
         $send_data
       );
-    
-      echo 'Response: ' . $response->getStatusCode() . PHP_EOL;
 
-    } catch (Exception $e) {
-      echo 'fail';
-      print_r($send_data);
-      echo (string)$e;
+    } catch (GuzzleHttp\Exception\ClientException $e) {
+      $response = $e->getResponse();
+      $responseBodyAsString = $response->getBody()->getContents();
+      echo $responseBodyAsString.PHP_EOL;
+      echo 'Sent JSON: <pre>' . PHP_EOL.json_encode($send_data['json'], JSON_PRETTY_PRINT) . '</pre>';
     }
   }
 
