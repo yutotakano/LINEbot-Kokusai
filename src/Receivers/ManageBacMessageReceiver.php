@@ -87,6 +87,8 @@ class ManageBacMessageReceiver
         $subject
       );
 
+      print_r($message_data);
+
       // Since sending to multiple users is different from sending to groups/rooms
       // Send to users first, using multicast. Simultaneously sends.
       // if(!empty($users)) {
@@ -147,6 +149,8 @@ class ManageBacMessageReceiver
         array_push($array, $row);
       }
     }
+
+    print_r($array);
 
     return $array;
     
