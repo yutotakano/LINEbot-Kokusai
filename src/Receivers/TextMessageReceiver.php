@@ -149,8 +149,6 @@ class TextMessageReceiver
    */
   public function __construct($event) {
 
-    print_r($this->classes);
-
     $text = trim($event['message']['text']);
 
     $reply = [
