@@ -87,11 +87,15 @@ class LINERequest
         $send_data
       );
 
-    } catch (GuzzleHttp\Exception\ClientException $e) {
+    } catch (GuzzleHttp\Exception\ClientException $e) { // 400 level errors
       $response = $e->getResponse();
       $responseBodyAsString = $response->getBody()->getContents();
-      echo $responseBodyAsString.PHP_EOL;
-      echo 'Sent JSON: <pre>' . PHP_EOL.json_encode($send_data['json'], JSON_PRETTY_PRINT) . '</pre>';
+      echo $response->getStatusCode() . ' ' . $responseBodyAsString.PHP_EOL;
+      echo 'Sent JSON:' . PHP_EOL.json_encode($send_data['json'], JSON_PRETTY_PRINT) . '</pre>';
+    } catch (GuzzleHttp\Exception\ServerException $e) { // 500 level errors
+      $response = $e->getResponse();
+      $responseBodyAsString = $response->getBody()->getContents();
+      echo $response->getStatusCode() . ' ' . $responseBodyAsString;
     }
   }
 

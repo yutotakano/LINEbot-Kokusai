@@ -87,7 +87,7 @@ class HTMLMessageToLINEFlex
    */
   public static function convert($id, $title, $body, $author, $subject_initial) {
 
-    $altText_arr = self::generateAltText($id, $subject_initial, $title, $body);
+    $altText_str = self::generateAltText($id, $subject_initial, $title, $body);
 
     $subject_arr = self::convertSubject($subject_initial);
 
@@ -105,7 +105,7 @@ class HTMLMessageToLINEFlex
     
     $id_arr = self::convertID($id);
 
-    $final_arr = self::createFinalArray($altText_arr, $subject_arr, $title_arr, $author_arr, $body_arr, $links_arr, $button_arr, $id_arr);
+    $final_arr = self::createFinalArray($altText_str, $subject_arr, $title_arr, $author_arr, $body_arr, $links_arr, $button_arr, $id_arr);
 
     return $final_arr;
 
@@ -375,11 +375,11 @@ class HTMLMessageToLINEFlex
   }
 
   private static function createFinalArray(
-    $altText_arr, $subject_arr, $title_arr, $author_arr, $body_arr, $links_arr, $button_arr, $id_arr) {
+    $altText_str, $subject_arr, $title_arr, $author_arr, $body_arr, $links_arr, $button_arr, $id_arr) {
 
       return [
         'type' => 'flex',
-        'altText' => $altText_arr,
+        'altText' => $altText_str,
         'contents' => [
           'type' => 'bubble',
           'styles' => [

@@ -59,6 +59,8 @@ class ManageBacMessageReceiver
       return $a['id'] <=> $b['id'];
     });
 
+    $new_messages = array_reverse($new_messages); // So that posting them becomes chronological
+
     // Get list of recipients to filter before sending the messages
     $recipients = $this->getRecipients($subject);
 
