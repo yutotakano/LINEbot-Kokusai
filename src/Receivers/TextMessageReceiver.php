@@ -288,6 +288,7 @@ class TextMessageReceiver
       case 'phl':
       case 'mhl':
       case 'tok':
+      case 'ee':
         return strtolower($text);
       default:
         throw new Exception('Invalid Group Name');
