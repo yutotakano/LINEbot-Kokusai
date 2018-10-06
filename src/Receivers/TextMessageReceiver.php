@@ -5,12 +5,14 @@
  * 
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
- * @version 0.1
+ * @version 1.0.1
  */
 
 namespace KokusaiIBLine\Receivers;
 
 use KokusaiIBLine\Helpers\LINERequest;
+use KokusaiIBLine\Helpers\TextMessage;
+use KokusaiIBLine\Helpers\TemplateMessage;
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -158,206 +160,30 @@ class TextMessageReceiver
 
     if(strtolower(substr($text, 0, 17)) === 'unsubscribe from ') {
       
-      switch(strtolower(substr($text, 17, -9))) {
-        case 'all':
-        case 'jasl':
-        case 'easl':
-        case 'hsl':
-        case 'chl':
-        case 'phl':
-        case 'mhl':
-        case 'tok':
-          $messageGroup = strtolower(substr($text, 17, -9));
-          break;
-        default:
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => 'There is no group by the name ' . strtolower(substr($text, 17, -9))
-          ]);
-      }
-
-      if(isset($event['source']['roomId'])) {
-        $id = $event['source']['roomId'];
-        $chatType = 'room';
-      } else if(isset($event['source']['groupId'])) {
-        $id = $event['source']['groupId'];
-        $chatType = 'group';
-      } else if(isset($event['source']['userId'])) {
-        $id = $event['source']['userId'];
-        $chatType = 'user';
-      }
-
-      if(isset($messageGroup)) {
-
-        // Remove recipient. Returns true on success, false or error string on failure.
-        $status = $this->removeRecipient($id, $chatType, $messageGroup);
-
-        if($status === true) {
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => ($chatType === 'user' ? 'You' : 'This ' . $chatType) . ' is no longer receiving messages from the "' . $messageGroup . '" group.'
-          ]);
-        } else {
-          echo $status;
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => ($status ?: 'An unknown error occurred.')
-          ]);
-        }
+      $messages = $this->unsubscribeMessageHandler($event);
+      foreach($messages as $message) {
+        array_push($reply['messages'], $message->data);
       }
 
     }
 
     if(strtolower(substr($text, 0, 13)) === 'subscribe to ') {
 
-      switch(strtolower(substr($text, 13, -9))) {
-        case 'all':
-        case 'jasl':
-        case 'easl':
-        case 'hsl':
-        case 'chl':
-        case 'phl':
-        case 'mhl':
-        case 'tok':
-        case 'ee':
-          $messageGroup = strtolower(substr($text, 13, -9));
-          break;
-        case '':
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => 'Here\'s a list of message groups you can subscribe to:'
-          ], [
-            'type' => 'template',
-            'altText' => 'Please view this on mobile: ',
-            'template' => [
-              'type' => 'carousel',
-              'columns' => $this->classes
-            ]
-          ]);
-          break;
-        default:
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => 'There is no group by the name ' . strtolower(substr($text, 13, -9))
-          ]);
-      }
-
-      if(isset($event['source']['roomId'])) {
-        $id = $event['source']['roomId'];
-        $chatType = 'room';
-      } else if(isset($event['source']['groupId'])) {
-        $id = $event['source']['groupId'];
-        $chatType = 'group';
-      } else if(isset($event['source']['userId'])) {
-        $id = $event['source']['userId'];
-        $chatType = 'user';
-      }
-
-      if(isset($messageGroup)) {
-
-        // Add recipient. Returns true on success, false or error string on failure.
-        $status = $this->addRecipient($id, $chatType, $messageGroup);
-
-        if($status === true) {
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => 'Successfully subscribed ' . ($chatType === 'user' ? 'you' : 'this ' . $chatType) . ' to the "' . $messageGroup . '" message group.'
-          ]);
-        } else {
-          echo $status;
-          array_push($reply['messages'], [
-            'type' => 'text',
-            'text' => ($status ?: 'An unknown error occurred.')
-          ]);
-        }
+      $messages = $this->subscribeMessageHandler($event);
+      foreach($message as $message) {
+        array_push($reply['messages'], $message->data);
       }
 
     }
 
     if(strtolower($text) === 'send help') {
-      array_push($reply['messages'], [
-        'type' => 'text',
-        'text' => "Here is what you can do:
-◍ \"subscribe to messages\" (shows a list of groups you can subscribe to)
-◍ \"subscribe to <groupNameHere> messages\" (subscribes you to that group)
-◍ \"unsubscribe from <groupNameHere> messages\" (unsubscribes you from that group)
-◍ \"send help\" (sends this)"]);
+      $message = new TextMessage('Here is what you can do:
+◍ "subscribe to messages" (shows a list of groups you can subscribe to)
+◍ "subscribe to <groupNameHere> messages" (subscribes you to that group)
+◍ "unsubscribe from <groupNameHere> messages" (unsubscribes you from that group)
+◍ "send help" (sends this)');
+      array_push($reply['messages'], $message->data);
     }
-
-    // if(strpos(strtolower($text), 'when is the next biology class') !== false ||
-    //    strpos(strtolower($text), 'when is the next bio class') !== false) {
-    //   $now = new DateTime();
-    //   $now->setTimezone(new DateTimeZone('Asia/Tokyo'));
-
-    //   $biology = [
-    //     [
-    //       'start' => 'Wednesday 13:50',
-    //       'end' => 'Wednesday 14:35'
-    //     ],[
-    //       'start' => 'Wednesday 14:45',
-    //       'end' => 'Wednesday 15:30'
-    //     ]
-    //   ];
-
-    //   $biology1Start = DateTime::createFromFormat('l H:i', $biology[0]['start'], new DateTimeZone('Asia/Tokyo'));
-    //   $biology1End = DateTime::createFromFormat('l H:i', $biology[0]['end'], new DateTimeZone('Asia/Tokyo'));
-    //   $biology2Start = DateTime::createFromFormat('l H:i', $biology[1]['start'], new DateTimeZone('Asia/Tokyo'));
-    //   $biology2End = DateTime::createFromFormat('l H:i', $biology[1]['end'], new DateTimeZone('Asia/Tokyo'));
-
-    //   if($now > $biology2End || $now < $biology1Start) {
-    //     // Is not in Biology right now
-    //     $interval = $now->diff($biology1Start);
-    //     if($interval->invert === 1) {
-    //       $biology1Start->add(new DateInterval('P7D'));
-    //       $biology1End->add(new DateInterval('P7D'));
-    //       $biology2Start->add(new DateInterval('P7D'));
-    //       $biology2End->add(new DateInterval('P7D'));
-    //       $interval = $now->diff($biology1Start);
-    //     }
-
-    //     $remaining_time = [];
-    //     // Check and display dates only if > 0
-    //     if($interval->days !== 0) {
-    //       array_push($remaining_time, (string)$interval->days . ' day' . (
-    //         $interval->days > 1 ? 's' : ''
-    //       ));
-    //     }
-    //     // Check and display hours only if > 0        
-    //     if($interval->h !== 0) {
-    //       array_push($remaining_time, (string)$interval->h . ' hour' . (
-    //         $interval->h > 1 ? 's' : ''
-    //       ));
-    //     }
-    //     // Check and display minutes only if days and hours === 0
-    //     if($interval->days === 0 && $interval->h === 0) {
-    //       array_push($remaining_time, (string)$interval->i . ' minute' . (
-    //         $interval->i > 1 ? 's' : ''
-    //       ));
-    //     }
-    //     array_push($reply['messages'], [
-    //       'type' => 'text',
-    //       'text' => 'Biology is in ' . implode(', ', $remaining_time)
-    //     ]);
-    //   } else if($now >= $biology1Start && $now <= $biology1End) {
-    //     // First lesson of biology
-    //     array_push($reply['messages'], [
-    //       'type' => 'text',
-    //       'text' => 'The first lesson of biology is ongoing. Pay attention!'
-    //     ]);
-    //   } else if($now >= $biology2Start && $now <= $biology2End) {
-    //     // Second lesson of biology
-    //     array_push($reply['messages'], [
-    //       'type' => 'text',
-    //       'text' => 'The second lesson of biology is ongoing. Pay attention!'
-    //     ]);
-    //   } else if($now > $biology1End && $now < $biology2Start) {
-    //     // Break time between biology lessons
-    //     array_push($reply['messages'], [
-    //       'type' => 'text',
-    //       'text' => 'It\'s break time, enjoy it!'
-    //     ]);
-    //   }
-    // }
     
     if(!empty($reply['messages'])) {
       $request = new LINERequest();
@@ -366,6 +192,128 @@ class TextMessageReceiver
     }
 
   }
+
+  /**
+   * Handle unsubscribe request messages by checking everything, then calling removeRecipient()
+   * 
+   * @param Array $event The array-parsed JSON payload of the event.
+   * @return Array
+   * @since 1.0.1
+   */
+  private function unsubscribeMessageHandler($event) {
+
+    try {
+      $messageGroup = $this->detectMessageGroup(substr($text, 17, -9));
+    } catch (Exception $e) {
+      $message = new TextMessage('There is no group by the name ' . strtolower(substr($text, 17, -9)));
+      return [$message];
+    }
+
+    try {
+      list($id, $chatType) = $this->detectChatType($event);
+    } catch (Exception $e) {
+      $message = new TextMessage('Internal Error: Invalid Chat Type');
+      return [$message];
+    }
+
+    // Remove recipient. Returns true on success, false or error string on failure.
+    $status = $this->removeRecipient($id, $chatType, $messageGroup);
+
+    if($status === true) {
+      $message = new TextMessage(($chatType === 'user' ? 'You' : 'This ' . $chatType) . ' is no longer receiving messages from the "' . $messageGroup . '" group.');
+    } else {
+      echo $status;
+      $message = new TextMessage(($status ?: 'An unknown error occurred.'));
+    }
+    return [$message];
+
+  }
+
+  /**
+   * Handle subscribe request messages by checking everything, then calling subscribeHandler().
+   * 
+   * @param Array $event The array-parsed JSON payload of the event.
+   * @return Array
+   * @since 1.0.1
+   */
+  private function subscribeMessageHandler($event) {
+
+    if(substr($text, 17, -9) === '') {
+      $message1 = new TextMesasge('Here\'s a list of groups you can subscribe to:');
+      $message2 = new TemplateMessage('carousel', $this->classes, 'Please view this on mobile:');
+      return [$message1, $message2];
+    } 
+
+    try {
+      $messageGroup = $this->detectMessageGroup(substr($text, 17, -9));
+    } catch (Exception $e) {
+      $message = new TextMessage('There is no group by the name ' . strtolower(substr($text, 17, -9)));
+      return [$message];
+    }
+
+    try {
+      list($id, $chatType) = $this->detectChatType($event);
+    } catch (Exception $e) {
+      $message = new TextMessage('Internal Error: Invalid Chat Type');
+      return [$message];
+    }
+
+    // Remove recipient. Returns true on success, false or error string on failure.
+    $status = $this->addRecipient($id, $chatType, $messageGroup);
+
+    if($status === true) {
+      $message = new TextMessage('Successfully subscribed ' . ($chatType === 'user' ? 'you' : 'this ' . $chatType) . ' to the "' . $messageGroup . '" message group.');
+    } else {
+      $message = new TextMessage(($status ?: 'An unknown error occurred.'));
+    }
+    return [$message];
+
+  }
+
+  /**
+   * Detect class group name from the text.
+   * @param String $text The part of the text that contains only group name
+   * @return String
+   * @since 1.0.1
+   * 
+   */
+  private function detectMessageGroup($text) {
+
+    switch($text) {
+      case 'all':
+      case 'jasl':
+      case 'easl':
+      case 'hsl':
+      case 'chl':
+      case 'phl':
+      case 'mhl':
+      case 'tok':
+        return strtolower($text);
+      default:
+        throw new Exception('Invalid Group Name');
+    }
+
+  }
+
+  /**
+   * Detect chat type from the event.
+   * @param Array $event JSON payload
+   * @return String
+   * @since 1.0.1
+   */
+  private function detectChatType($event) {
+
+    if(isset($event['source']['roomId'])) {
+      return [$event['source']['roomId'], 'room'];
+    } else if(isset($event['source']['groupId'])) {
+      return [$event['source']['groupId'], 'group'];
+    } else if(isset($event['source']['userId'])) {
+      return [$event['source']['userId'], 'user'];
+    }
+    throw new Exception('Invalid Chat Type');
+
+  }
+ 
 
   /**
    * Add recipient to database.
