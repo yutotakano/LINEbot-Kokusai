@@ -5,7 +5,7 @@
  * 
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
- * @version 0.1
+ * @version 1.0.1
  */
 
 namespace KokusaiIBLine\Receivers;
@@ -87,8 +87,6 @@ class ManageBacMessageReceiver
         $subject
       );
 
-      print_r($message_data);
-
       // Since sending to multiple users is different from sending to groups/rooms
       // Send to users first, using multicast. Simultaneously sends.
       // if(!empty($users)) {
@@ -149,8 +147,6 @@ class ManageBacMessageReceiver
         array_push($array, $row);
       }
     }
-
-    print_r($array);
 
     return $array;
     

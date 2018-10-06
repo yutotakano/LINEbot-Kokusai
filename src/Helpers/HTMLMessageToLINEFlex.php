@@ -5,7 +5,7 @@
  * 
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
- * @version 0.1
+ * @version 1.0.1
  */
 
 namespace KokusaiIBLine\Helpers;

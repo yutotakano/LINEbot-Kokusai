@@ -6,7 +6,7 @@
  * 
  * @since 0.1
  * @author Yuto Takano <moa17stock@gmail.com>
- * @version 0.1
+ * @version 1.0.1
  */
 
 namespace KokusaiIBLine\Helpers;
@@ -79,13 +79,13 @@ class ManageBacAuthenticator
 
     $doc = new DOMDocument();
     @$doc->loadHTML($loginResponse->getBody());
-    $nodes = $doc->getElementsByTagName("meta");
+    $nodes = $doc->getElementsByTagName('meta');
     
     // Get csrf_token, required for logging in
     for($i = 0; $i < $nodes->length; $i++) {
       $meta = $nodes->item($i);
-      if($meta->getAttribute("name") == "csrf-token") {
-        $csrf_token = $meta->getAttribute("content");
+      if($meta->getAttribute('name') == 'csrf-token') {
+        $csrf_token = $meta->getAttribute('content');
       }
     }
 
