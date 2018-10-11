@@ -148,6 +148,8 @@ class ManageBacMessageReceiver
       }
     }
 
+    echo 'getRecipients():';
+    print_r($array);
     return $array;
     
 
