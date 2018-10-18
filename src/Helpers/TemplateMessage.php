@@ -25,14 +25,17 @@ class TemplateMessage
    * Contains the array data to be sent to LINE.
    * @var Array
    */
-  public $data = [];
+  public $data = [
+    'type' => 'template',
+    'template' => []
+  ];
 
   public function __construct($type, $data, $alt_text) {
 
-    $this->data['type'] = $type;
-    $this->data['template'] = $data;
     $this->data['altText'] = $alt_text; 
-
+    $this->data['template']['type'] = $type;
+    $this->data['template'] = array_merge_recursive($this->data['template'], $data);
+    
   }
 
 }
