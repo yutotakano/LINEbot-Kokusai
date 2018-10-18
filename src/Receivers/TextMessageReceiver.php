@@ -16,6 +16,7 @@ use KokusaiIBLine\Helpers\TemplateMessage;
 use DateTime;
 use DateInterval;
 use DateTimeZone;
+use Exception;
 
 /**
  * Receiver for text message webhooks
@@ -95,7 +96,7 @@ class TextMessageReceiver
     [
       'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_PHL.png',
       'title' => 'Physics HL ("PHL")',
-      'text' => 'Ms. Quema',
+      'text' => 'Mr. Quema',
       'actions' => [
         [
           'type' => 'postback',
@@ -124,7 +125,7 @@ class TextMessageReceiver
         [
           'type' => 'postback',
           'label' => 'Subscribe',
-          'data' => '{"action":"subscribe_class","data":{"class_code":"mhl"}}'
+          'data' => '{"action":"subscribe_class","data":{"class_code":"tok"}}'
         ]
       ]
     ],
@@ -160,7 +161,7 @@ class TextMessageReceiver
 
     if(strtolower(substr($text, 0, 17)) === 'unsubscribe from ') {
       
-      $messages = $this->unsubscribeMessageHandler($event);
+      $messages = $this->unsubscribeMessageHandler($text, $event);
       foreach($messages as $message) {
         array_push($reply['messages'], $message->data);
       }
@@ -169,8 +170,8 @@ class TextMessageReceiver
 
     if(strtolower(substr($text, 0, 13)) === 'subscribe to ') {
 
-      $messages = $this->subscribeMessageHandler($event);
-      foreach($message as $message) {
+      $messages = $this->subscribeMessageHandler($text, $event);
+      foreach($messages as $message) {
         array_push($reply['messages'], $message->data);
       }
 
@@ -200,7 +201,7 @@ class TextMessageReceiver
    * @return Array
    * @since 1.0.1
    */
-  private function unsubscribeMessageHandler($event) {
+  private function unsubscribeMessageHandler($text, $event) {
 
     try {
       $messageGroup = $this->detectMessageGroup(substr($text, 17, -9));
@@ -220,7 +221,7 @@ class TextMessageReceiver
     $status = $this->removeRecipient($id, $chatType, $messageGroup);
 
     if($status === true) {
-      $message = new TextMessage(($chatType === 'user' ? 'You' : 'This ' . $chatType) . ' is no longer receiving messages from the "' . $messageGroup . '" group.');
+      $message = new TextMessage(($chatType === 'user' ? 'You are ' : 'This ' . $chatType . ' is ') . 'no longer receiving messages from the "' . $messageGroup . '" group.');
     } else {
       echo $status;
       $message = new TextMessage(($status ?: 'An unknown error occurred.'));
@@ -236,18 +237,19 @@ class TextMessageReceiver
    * @return Array
    * @since 1.0.1
    */
-  private function subscribeMessageHandler($event) {
-
-    if(substr($text, 17, -9) === '') {
-      $message1 = new TextMesasge('Here\'s a list of groups you can subscribe to:');
-      $message2 = new TemplateMessage('carousel', $this->classes, 'Please view this on mobile:');
+  private function subscribeMessageHandler($text, $event) {
+    if(substr($text, 13, -9) == '') {
+      $message1 = new TextMessage('Here\'s a list of groups you can subscribe to:');
+      $message2 = new TemplateMessage('carousel', [
+        'columns' => $this->classes
+      ], 'Please view this on mobile:');
       return [$message1, $message2];
     } 
 
     try {
-      $messageGroup = $this->detectMessageGroup(substr($text, 17, -9));
+      $messageGroup = $this->detectMessageGroup(substr($text, 13, -9));
     } catch (Exception $e) {
-      $message = new TextMessage('There is no group by the name ' . strtolower(substr($text, 17, -9)));
+      $message = new TextMessage('There is no group by the name ' . strtolower(substr($text, 13, -9)));
       return [$message];
     }
 
