@@ -67,62 +67,62 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/ib/messages as an associative array.
+   * Get messages from /student/ib/discussions as an associative array.
    * 
    * @since 0.1
    */
   public function getAll() {
 
-    $this->getMessagesRecursive('/student/ib/messages');
+    $this->getMessagesRecursive('/student/ib/discussions');
 
     return $this->messages;
 
   }  
 
   /**
-   * Get messages from /student/classes/10901407/messages as an associative array.
+   * Get messages from /student/classes/10901407/discussions as an associative array.
    * Japanese A: Literature SL
    * 
    * @since 0.1
    */
   public function getJASL() {
 
-    $this->getMessagesRecursive('/student/classes/10901407/messages');
+    $this->getMessagesRecursive('/student/classes/10901407/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/classes/10901409/messages as an associative array.
+   * Get messages from /student/classes/10901409/discussions as an associative array.
    * English A: Language and Literature SL
    * 
    * @since 0.1
    */
   public function getEASL() {
 
-    $this->getMessagesRecursive('/student/classes/10901409/messages');
+    $this->getMessagesRecursive('/student/classes/10901409/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/classes/10901414/messages as an associative array.
+   * Get messages from /student/classes/10901414/discussions as an associative array.
    * History
    * 
    * @since 0.1
    */
   public function getHSL() {
 
-    $this->getMessagesRecursive('/student/classes/10901414/messages');
+    $this->getMessagesRecursive('/student/classes/10901414/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/classes/10901417/messages as an associative array.
+   * Get messages from /student/classes/10901417/discussions as an associative array.
    * Chemistry HL
    * 
    * @since 0.1
@@ -136,56 +136,56 @@ class ManageBacMessageGetter
   }
 
   /**
-   * Get messages from /student/classes/10901419/messages as an associative array.
+   * Get messages from /student/classes/10901419/discussions as an associative array.
    * Physics
    * 
    * @since 0.1
    */
   public function getPHL() {
 
-    $this->getMessagesRecursive('/student/classes/10901419/messages');
+    $this->getMessagesRecursive('/student/classes/10901419/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/classes/10901421/messages as an associative array.
+   * Get messages from /student/classes/10901421/discussions as an associative array.
    * Mathematics HL
    * 
    * @since 0.1
    */
   public function getMHL() {
 
-    $this->getMessagesRecursive('/student/classes/10901421/messages');
+    $this->getMessagesRecursive('/student/classes/10901421/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/classes/10901422/messages as an associative array.
+   * Get messages from /student/classes/10901422/discussions as an associative array.
    * Theory of Knowledge
    * 
    * @since 0.1
    */
   public function getTOK() {
 
-    $this->getMessagesRecursive('/student/classes/10901422/messages');
+    $this->getMessagesRecursive('/student/classes/10901422/discussions');
 
     return $this->messages;
 
   }
 
   /**
-   * Get messages from /student/groups/10902178/messages as an associative array.
+   * Get messages from /student/groups/10902178/discussions as an associative array.
    * Extended Essay Group
    * 
    * @since 0.1 
    */
   public function getEE() {
 
-    $this->getMessagesRecursive('/student/groups/10902178/messages');
+    $this->getMessagesRecursive('/student/groups/10902178/discussions');
 
     return $this->messages;
     
@@ -202,7 +202,7 @@ class ManageBacMessageGetter
 
     $response = $this->client->request(
       'GET',
-      $url . '/page/' . (string)$page,
+      $url . '?page=' . (string)$page,
       [
         'cookies' => $this->session
       ]

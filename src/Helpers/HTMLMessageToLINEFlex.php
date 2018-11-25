@@ -124,11 +124,11 @@ class HTMLMessageToLINEFlex
 
     $subject = self::$subject_mapping[$subject_initial];
     if($subject['id'] === 'ib') {
-      $uri = 'https://kokusaiib.managebac.com/student/ib/messages/' . $id; 
+      $uri = 'https://kokusaiib.managebac.com/student/ib/discussions/' . $id; 
     } else if($subject['id'] === 'ee') {
-      $uri = 'https://kokusaiib.managebac.com/student/groups/10902178/messages/' . $id;
+      $uri = 'https://kokusaiib.managebac.com/student/groups/10902178/discussions/' . $id;
     } else {
-      $uri = 'https://kokusaiib.managebac.com/student/classes/' . $subject['id'] . '/messages/' . $id;
+      $uri = 'https://kokusaiib.managebac.com/student/classes/' . $subject['id'] . '/discussions/' . $id;
     }
 
     // Alt text has a max of 400
@@ -320,11 +320,11 @@ class HTMLMessageToLINEFlex
 
     $subject = self::$subject_mapping[$subject_initial];
     if($subject['id'] === 'ib') {
-      $uri = 'https://kokusaiib.managebac.com/student/ib/messages/' . $id; 
+      $uri = 'https://kokusaiib.managebac.com/student/ib/discussions/' . $id; 
     } else if($subject['id'] === 'ee') {
-      $uri = 'https://kokusaiib.managebac.com/student/groups/10902178/messages/' . $id;
+      $uri = 'https://kokusaiib.managebac.com/student/groups/10902178/discussions/' . $id;
     } else {
-      $uri = 'https://kokusaiib.managebac.com/student/classes/' . $subject['id'] . '/messages/' . $id;
+      $uri = 'https://kokusaiib.managebac.com/student/classes/' . $subject['id'] . '/discussions/' . $id;
     }
 
     return [
