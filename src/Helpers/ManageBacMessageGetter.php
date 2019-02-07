@@ -129,7 +129,7 @@ class ManageBacMessageGetter
    */
   public function getCHL() {
 
-    $this->getMessagesRecursive('/student/classes/10901417/messages');
+    $this->getMessagesRecursive('/student/classes/10901417/discussions');
 
     return $this->messages;
 
@@ -206,24 +206,24 @@ class ManageBacMessageGetter
       [
         'cookies' => $this->session
       ]
-    );
+    );  
 
     $html = HtmlDomParser::str_get_html($response->getBody());
 
-    $messages = $html->find('main > .content-wrapper > .content-block > .message');
+    $messages = $html->find('main > .content-wrapper > .content-block > .discussion');
 
     $this->messages = array_merge($this->messages, $this->parseMessages($messages));
 
     $next_button = $html->find('main > .content-wrapper > .pagination li.next', 0);
 
+    // Free RAM and collect garbage
+    $html->clear();
+    gc_collect_cycles();
+
     if(!$next_button) return;
 
     // The last page has the next button, but it's disabled
     if(strpos($next_button->class, 'disabled') === false) {
-      
-      // Free RAM and collect garbage
-      $html->clear();
-      gc_collect_cycles();
 
       // Recursive call for the next page
       $this->getMessagesRecursive($url, $page + 1);
@@ -245,16 +245,16 @@ class ManageBacMessageGetter
     foreach($messages as $message) {
 
       $paragraphs = [];
-      foreach($message->find('.body p') as $paragraph) {
-        $paragraphs[] = $paragraph->innertext;
+      foreach($message->find('.body .fix-body-margins text') as $paragraph) {
+        $paragraphs[] = str_replace("\n", '<br>', $paragraph->innertext);
       }
 
       array_push($array, [
-        'id' => substr($message->id, 8),
+        'id' => substr($message->id, 11 ),
         'title' => $message->find('.body .title a', 0)->innertext,
         'author' => $message->find('.header strong', 0)->innertext,
         'category' => $message->find('.header em', 0)->innertext ?? null,
-        'body' => implode('<br><br>', $paragraphs)
+        'body' => html_entity_decode(implode('<br><br>', $paragraphs))
       ]);
 
     }
