@@ -17,3 +17,6 @@ db_pass = ""
 ; chatType varchar(255) NOT NULL
 ; messageGroup varchar(255) NOT NULL
 db_name = "mydatabase"
+
+; Imgur client id for anonymous usage of Tex uploads
+imgur_client_id = ""

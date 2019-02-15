@@ -80,7 +80,6 @@ class LINERequest
       $send_data['json'] = $this->post_data;
     }
     try {
-
       $response = $client->request(
         $this->method,
         $this->url,

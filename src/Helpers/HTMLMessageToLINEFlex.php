@@ -95,7 +95,7 @@ class HTMLMessageToLINEFlex
 
     $author_arr = self::convertAuthor($author);
 
-    [$body, $extracted_links_arr] = self::extractLinks($body);
+    list($body, $extracted_links_arr) = self::extractLinks($body);
 
     $body_arr = self::convertBody($body);
 

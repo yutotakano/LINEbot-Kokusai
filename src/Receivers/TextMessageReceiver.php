@@ -13,6 +13,7 @@ namespace KokusaiIBLine\Receivers;
 use KokusaiIBLine\Helpers\LINERequest;
 use KokusaiIBLine\Helpers\TextMessage;
 use KokusaiIBLine\Helpers\TemplateMessage;
+use KokusaiIBLine\Helpers\TexMath;
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -158,6 +159,15 @@ class TextMessageReceiver
       'replyToken' => $event['replyToken'],
       'messages' => []
     ];
+
+    // Test if Latex Math is in this text, if so, parse and send it again
+    $texmath = new TexMath($text);
+    if($texmath->present) {
+      $texmath->render();
+      foreach($texmath->messages as $message) {
+        array_push($reply['messages'], $message->data);
+      }
+    }
 
     if(strtolower(substr($text, 0, 17)) === 'unsubscribe from ') {
       

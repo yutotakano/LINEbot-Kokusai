@@ -12,3 +12,5 @@ define('DB_SERVERNAME', $config['db_server']);
 define('DB_USERNAME', $config['db_user']);
 define('DB_PASSWORD', $config['db_pass']);
 define('DB_DBNAME', $config['db_name']);
+
+define('IMGUR_CLIENT_ID', $config['imgur_client_id']);

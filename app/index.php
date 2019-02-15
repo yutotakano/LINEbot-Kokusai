@@ -9,6 +9,7 @@
  */
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../tex2png/vendor/autoload.php';
 
 use KokusaiIBLine\Builders\RequestBuilder;
 use KokusaiIBLine\KokusaiIBLine;
