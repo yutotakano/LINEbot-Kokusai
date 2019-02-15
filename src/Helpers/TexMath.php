@@ -44,7 +44,7 @@ class TexMath
 
   public function __construct($text) {
     
-    preg_match_all('/\$(.+)\$/', $text, $matches);
+    preg_match_all('/\$([^\$\n]+)\$/', $text, $matches);
     if(count($matches[1]) === 0) {
       $this->present = false;
       return;
