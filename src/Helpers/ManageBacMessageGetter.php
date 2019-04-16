@@ -244,6 +244,8 @@ class ManageBacMessageGetter
 
     foreach($messages as $message) {
 
+      if($message->find('.label-danger text', 0)->innertext === 'Only Visible for Teachers') continue;
+
       $paragraphs = [];
       foreach($message->find('.body .fix-body-margins text') as $paragraph) {
         $paragraphs[] = str_replace("\n", '<br>', $paragraph->innertext);
