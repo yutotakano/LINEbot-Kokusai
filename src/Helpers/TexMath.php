@@ -59,9 +59,12 @@ class TexMath
    */
   public function render() {
     foreach($this->matches as $match) {
-      $a = Tex2png::create($match)->generate();
-      $image = file_get_contents($a->file);
-      if($image === '') return;
+      $a = Tex2png::create($match, 400)->generate();
+      $image = @file_get_contents($a->file);
+      if(!$image || $image === '') {
+        echo 'Could not render Tex file containing formula: ' . $match . PHP_EOL;
+        return;
+      }
 
       $client = new GuzzleHttp\Client([
         'base_uri' => 'https://api.imgur.com/3/'
