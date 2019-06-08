@@ -27,6 +27,12 @@ class ManageBacMessageGetter
 {
 
   /**
+   * Will contain the user agent string for this session, randomly selected from the config.
+   * @var String
+   */
+  private $user_agent;
+
+  /**
    * Will contain the ManageBac csrf token to pass in requests.
    * @var String
    */
@@ -53,13 +59,15 @@ class ManageBacMessageGetter
   /**
    * Fill in the required fields
    * 
+   * @param String $user_agent The user agent for this session
    * @param String $csrf_token Pass in POST requests
    * @param CookieJar $session Cookie Jar for Guzzle requests
    * @param GuzzleHttp\Client $client Client to always use for this session
    * @since 0.1
    */
-  public function __construct($csrf_token, $session, $client) {
+  public function __construct($user_agent, $csrf_token, $session, $client) {
 
+    $this->user_agent = $user_agent;
     $this->csrf_token = $csrf_token;
     $this->session = $session;
     $this->client = $client;
@@ -192,6 +200,20 @@ class ManageBacMessageGetter
   }
 
   /**
+   * Get messages from /student/groups/10538278/discussions as an associative array.
+   * Career & College Counseling DP 2
+   * 
+   * @since 0.1 
+   */
+  public function getCC() {
+
+    $this->getMessagesRecursive('/student/groups/10538278/discussions');
+
+    return $this->messages;
+    
+  }
+
+  /**
    * Recursively get the message elements on each page to pass into parseMessages()
    * 
    * @param String $url The base relative URL for the messages
@@ -200,13 +222,23 @@ class ManageBacMessageGetter
    */
   private function getMessagesRecursive($url, $page = 1) {
 
-    $response = $this->client->request(
-      'GET',
-      $url . '?page=' . (string)$page,
-      [
-        'cookies' => $this->session
-      ]
-    );  
+    try {
+      $response = $this->client->request(
+        'GET',
+        $url . '?page=' . (string)$page,
+        [
+          'headers' => [
+            'User-Agent' => $this->user_agent
+          ],
+          'cookies' => $this->session
+        ]
+      );
+    } catch (GuzzleHttp\Exception\ClientException $e) {
+      echo 'We have encountered an error in getMessagesRecursive(). Maybe a user-agent block or captcha?' . PHP_EOL;
+      echo 'The following is the response:' . PHP_EOL;
+      print_r($e->getResponse()->getBody()->getContents());
+      return;
+    }
 
     $html = HtmlDomParser::str_get_html($response->getBody());
 
@@ -244,7 +276,7 @@ class ManageBacMessageGetter
 
     foreach($messages as $message) {
 
-      if($message->find('.label-danger text', 0)->innertext === 'Only Visible for Teachers') continue;
+      if(($message->find('.label-danger text', 0)->innertext ?? '') === 'Only Visible for Teachers') continue;
 
       $paragraphs = [];
       foreach($message->find('.body .fix-body-margins text') as $paragraph) {

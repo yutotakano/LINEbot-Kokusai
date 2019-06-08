@@ -24,6 +24,13 @@ class KokusaiIBLine
 {
 
   /**
+   * 
+   */
+  private function randomUserAgent() {
+    return USER_AGENTS[array_rand(USER_AGENTS)];
+  }
+
+  /**
    * Route the webhook to specific receivers.
    * 
    * @param Array $requests The array of Requests
@@ -49,15 +56,17 @@ class KokusaiIBLine
    */
   public function checkMessages() {
 
-    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK', 'EE'];
+    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK', 'EE', 'CC'];
+    $user_agent = $this->randomUserAgent();
 
     $managebac = new ManageBacAuthenticator();
-    $managebac->authenticate();
+    $managebac->authenticate($user_agent);
     
     foreach($groups as $group) {
 
       // Construct, and use the session we created before.
       $message_getter = new ManageBacMessageGetter(
+        $user_agent,
         $managebac->csrf_token,
         $managebac->session,
         $managebac->client
@@ -65,6 +74,8 @@ class KokusaiIBLine
 
       // Use the stored tokens to get the messages in the IB students group (grade-wide)
       $messages_data = $message_getter->{'get' . $group}();
+
+      if($group === 'CC') print_r($messages_data);
 
       // Initiate a receiver, which checks if there are new messages, and sends the new ones
       $receiver = new ManageBacMessageReceiver($messages_data, $group);

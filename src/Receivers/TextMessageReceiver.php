@@ -141,6 +141,18 @@ class TextMessageReceiver
           'data' => '{"action":"subscribe_class","data":{"class_code":"ee"}}'
         ]
       ]
+    ],
+    [
+      'thumbnailImageUrl' => APP_ROOT . '/assets/SubjectThumbnail_CC.png',
+      'title' => 'Career & College Counseling ("CC")',
+      'text' => 'Ms. Murakami',
+      'actions' => [
+        [
+          'type' => 'postback',
+          'label' => 'Subscribe',
+          'data' => '{"action":"subscribe_class","data":{"class_code":"cc"}}'
+        ]
+      ]
     ]
   ];
 
@@ -301,6 +313,7 @@ class TextMessageReceiver
       case 'mhl':
       case 'tok':
       case 'ee':
+      case 'cc':
         return strtolower($text);
       default:
         throw new Exception('Invalid Group Name');

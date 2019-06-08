@@ -67,6 +67,10 @@ class HTMLMessageToLINEFlex
     'EE' => [
       'name' => 'Extended Essay',
       'id' => 'ee'
+    ],
+    'CC' => [
+      'name' => 'Career/College Counceling',
+      'id' => 'cc'
     ]
   ];
 

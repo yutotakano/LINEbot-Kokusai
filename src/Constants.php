@@ -14,3 +14,5 @@ define('DB_PASSWORD', $config['db_pass']);
 define('DB_DBNAME', $config['db_name']);
 
 define('IMGUR_CLIENT_ID', $config['imgur_client_id']);
+
+define('USER_AGENTS', $config['user_agents']);

@@ -58,9 +58,10 @@ class ManageBacAuthenticator
   /**
    * Login, and store the cookies' jar and csrf_token for ManageBac requests.
    * 
+   * @param String $user_agent The user agent for this session to be used. 
    * @since 0.1
    */
-  public function authenticate() {
+  public function authenticate($user_agent) {
 
     $cookieJar = new GuzzleHttp\Cookie\CookieJar;
 
@@ -68,6 +69,9 @@ class ManageBacAuthenticator
       'GET',
       'login',
       [
+        'headers' => [
+          'User-Agent' => $user_agent
+        ],
         'cookies' => $cookieJar,
         'allow_redirects' => false
       ]
@@ -89,11 +93,14 @@ class ManageBacAuthenticator
       }
     }
 
-
+    
     $sessionResponse = $this->client->request(
       'POST',
       'sessions',
       [
+        'headers' => [
+          'User-Agent' => $user_agent
+        ],
         'cookies' => $cookieJar,
         'allow_redirects' => false,
         'form_params' => [
