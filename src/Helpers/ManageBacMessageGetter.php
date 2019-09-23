@@ -235,7 +235,8 @@ class ManageBacMessageGetter
       );
     } catch (GuzzleHttp\Exception\ClientException $e) {
       echo 'We have encountered an error in getMessagesRecursive(). Maybe a user-agent block or captcha?' . PHP_EOL;
-      echo 'The following is the response:' . PHP_EOL;
+      echo 'The following is the attempted URL: ' . $url . PHP_EOL;
+      echo 'And the following is the response:' . PHP_EOL;
       print_r($e->getResponse()->getBody()->getContents());
       return;
     }
