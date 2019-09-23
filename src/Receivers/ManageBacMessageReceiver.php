@@ -87,21 +87,6 @@ class ManageBacMessageReceiver
         $subject
       );
 
-      // Since sending to multiple users is different from sending to groups/rooms
-      // Send to users first, using multicast. Simultaneously sends.
-      // if(!empty($users)) {
-        
-      //   $request = new LINERequest();
-      //   $request->prepare('POST', 'message/multicast', [
-      //     'to' => array_column($users, 'id'),
-      //     'messages' => [
-      //       $message_data
-      //     ]
-      //   ]);
-      //   $request->send();
-
-      // }
-
       // Next, send to each group or room one by one.
       foreach(array_merge($users, $groups, $rooms) as $recipient) {
 
