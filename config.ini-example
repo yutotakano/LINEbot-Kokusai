@@ -24,4 +24,4 @@ imgur_client_id = ""
 ; User Agent strings to randomly select from
 user_agents[] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
 user_agents[] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
-user_agents[] = "more useragents can go here.
+user_agents[] = "more useragents can go here."
