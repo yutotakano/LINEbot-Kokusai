@@ -181,6 +181,14 @@ class TextMessageReceiver
       }
     }
 
+    if(strpos(strtolower($text), 'how many days are left') !== false || strpos(strtolower($text), 'days left') !== false) {
+      $now = new DateTime('now');
+      $first_exam = new DateTime('2019-11-05');
+      $interval = $now->diff($first_exam);
+      $message = new TextMessage($interval->days . ' days until the Physics exam... :(');
+      array_push($reply['messages'], $message->data);
+    }
+
     if(strtolower(substr($text, 0, 17)) === 'unsubscribe from ') {
       
       $messages = $this->unsubscribeMessageHandler($text, $event);
