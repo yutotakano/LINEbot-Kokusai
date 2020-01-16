@@ -193,9 +193,10 @@ class ManageBacMessageGetter
    */
   public function getEE() {
 
-    $this->getMessagesRecursive('/student/groups/10902178/discussions');
+    // $this->getMessagesRecursive('/student/groups/10902178/discussions');
 
-    return $this->messages;
+    // return $this->messages;
+    return [];
     
   }
 
@@ -222,6 +223,7 @@ class ManageBacMessageGetter
    */
   private function getMessagesRecursive($url, $page = 1) {
 
+    echo 'running function';
     try {
       $response = $this->client->request(
         'GET',

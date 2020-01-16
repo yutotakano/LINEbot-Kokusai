@@ -56,12 +56,12 @@ class KokusaiIBLine
    */
   public function checkMessages() {
 
-    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK', 'EE', 'CC'];
+    $groups = ['All', 'JASL', 'EASL', 'HSL', 'CHL', 'PHL', 'MHL', 'TOK', 'CC'];
     $user_agent = $this->randomUserAgent();
 
     $managebac = new ManageBacAuthenticator();
     $managebac->authenticate($user_agent);
-    
+
     foreach($groups as $group) {
 
       // Construct, and use the session we created before.
